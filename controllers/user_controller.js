@@ -56,7 +56,8 @@ const loginUser = asyncHandler(async (req,res) => {
         process.env.ACCESS_TOKEN,
         {expiresIn: "1m"}
         );
-        res.status(200).json({})
+        console.log(accessToken);
+        res.status(200).json({ accessToken });
     } else {
         res.status(401);
         throw new Error("Credentials are not valid.");
