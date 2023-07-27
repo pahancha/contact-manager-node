@@ -2,6 +2,9 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/user_model");
 const bcrypt = require("bcrypt");
 
+const jwt = require("jsonwebtoken");
+const { use } = require("../routes/contact_routes");
+
 // Regiser a user
 // POST /api/users/register
 // access - public
@@ -35,7 +38,29 @@ const registerUser = asyncHandler(async (req, res) => {
 // POST /api/users/login
 // access public
 const loginUser = asyncHandler(async (req,res) => {
-    res.json({ message: "Login user." });
+    const {email, password} = req.body;
+    if (!email || !password) {
+        res.status(400);
+        throw new Error("Email and Password are mandatory.");
+    }
+    const user = await User.findOne({ email });
+
+    if(user && (await bcrypt.compare(password, user.password))) {
+        const accessToken = jwt.sign({
+            user: {
+                username: user.name,
+                email: user.email,
+                id: user.id
+            },
+        },
+        process.env.ACCESS_TOKEN,
+        {expiresIn: "1m"}
+        );
+        res.status(200).json({})
+    } else {
+        res.status(401);
+        throw new Error("Credentials are not valid.");
+    }
 });
 
 // current info
