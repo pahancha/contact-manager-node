@@ -65,7 +65,7 @@ const loginUser = asyncHandler(async (req,res) => {
 });
 
 // current info
-// POST /api/users/current
+// GET /api/users/current
 // access private
 
 const currentUser = asyncHandler(async (req,res)=> {
