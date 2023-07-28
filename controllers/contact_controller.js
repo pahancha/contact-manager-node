@@ -27,6 +27,7 @@ const createContact = asyncHandler(async(req, res) =>  {
         name,
         email,
         phone,
+        user_id: req.user.id
     });
     res.status(201).json(contact)
 });
@@ -53,6 +54,11 @@ const updateContact = asyncHandler(async(req, res) => {
         res.status(404);
         throw new Error("Contact not found.");
     }
+    if (contact.user_id.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("Permission denied: Only authorized user can update contacts");
+    }
+
 
     const updatedContact = await Contact.findByIdAndUpdate(
         req.params.id,
@@ -70,8 +76,12 @@ const deleteContact = asyncHandler(async(req, res) => {
         res.status(404);
         throw new Error("Contact not found.");
     }
+    if(contact.user.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("Permission Denied. User do not have the right to delete the contact.");
+    }
 
-    await Contact.remove();
+    await Contact.deleteOne({_id: req.params.id});  
     res.status(200).json(contact)
 });
 
