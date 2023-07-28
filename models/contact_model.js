@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const contact_schema = mongoose.Schema(
     {
+        user_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required : true,
+            ref: "User"
+        },
         name: {
             type: String,
             required: [true, "Please add the name of the contact."],
